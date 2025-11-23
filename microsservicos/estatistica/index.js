@@ -27,7 +27,7 @@ app.post('/observacao/estatistica', async (req, res) => {
             type: event.status,
             id: event.id,
             content: event.texto,
-            reminderId: event.lembreteId
+            observationId: event.lembreteId
         }
     ];
     axios.post('http://localhost:10000/eventos', {
