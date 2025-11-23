@@ -23,7 +23,8 @@ app.post('/lembretes', async function(req, res){
   id++
   const texto = req.body.texto
   // const lembrete = { id: id, texto: texto}
-  const lembrete = { id, texto }
+  let lembrete = { id, texto }
+  lembrete.texto >= 50 ? lembrete = {...lembrete, type: 'important'} : lembrete = {...lembrete, type: 'commum'};
   lembretes[id] = lembrete
   await axios.post('http://localhost:10000/eventos', {
     type: 'LembreteCriado',
