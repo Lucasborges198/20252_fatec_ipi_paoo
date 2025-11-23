@@ -27,6 +27,7 @@ app.post('/lembretes', async function(req, res){
   ? lembrete = {...lembrete, type: 'important'}
   : lembrete = {...lembrete, type: 'commum'};
   lembretes[id] = lembrete
+  await axios.post('http://localhost:8080/lembranca/estatistica', (lembrete));
   await axios.post('http://localhost:10000/eventos', {
     type: 'LembreteCriado',
     payload: lembrete

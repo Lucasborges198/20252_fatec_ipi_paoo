@@ -34,7 +34,7 @@ const funcoes = {
   }
 }
 //POST /lembretes/1/observacoes (req, res) => {}
-app.post('/lembretes/:id/observacoes', (req, res) => {
+app.post('/lembretes/:id/observacoes', async (req, res) => {
   const idObs = uuidv4()
   const { texto } = req.body
   const { id: lembreteId } = req.params
@@ -42,10 +42,11 @@ app.post('/lembretes/:id/observacoes', (req, res) => {
   const observacoesDoLembrete = observacoesPorLembrete[lembreteId] || []
   observacoesDoLembrete.push(observacao)
   observacoesPorLembrete[lembreteId] = observacoesDoLembrete
-  axios.post('http://localhost:10000/eventos', {
+  await axios.post('http://localhost:10000/eventos', {
     type: 'ObservacaoCriada',
     payload: observacao
-  })
+  }),
+  await axios.post('http://localhost:8080/observacao/estatistica', (observacao));
   res.status(201).json(observacoesDoLembrete)
 })
 
