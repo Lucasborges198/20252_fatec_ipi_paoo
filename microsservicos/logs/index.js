@@ -12,7 +12,7 @@ let logs = [];
 app.post('/register/log', async (req, res) => {
     const event = req.body;
 
-    logs = [...logs, {data: event, logId: UUID, date: today, type: event.type}];
+    logs = [...logs, {data: event, logId: UUID, date: today}];
     axios.post('http://localhost:10000/eventos', {
       type: `log - ${event.type}`,
       payload: event
