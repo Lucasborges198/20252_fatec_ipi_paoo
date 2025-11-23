@@ -1,15 +1,12 @@
 export function calculoEstatisca(data) {
+    const reminders = data?.reminders;
     const response = {
-        totalReminders: data?.reminders.length,
-        commumReminders: data?.reminders.filter((reminder) => {
-            return reminder?.type == 'commum'
-        }).length || 0,
-        importantReminders: data?.reminders.filter((reminder) => {
-            return reminder?.type == 'important'
-        }).length || 0,
+        totalReminders: reminders.length,
+        commumReminders: filterReminders(reminders, 'commum'),
+        importantReminders: filterReminders(reminders, 'important'),
         totalObservations: data?.observations.length,
-        avarageObservations: calcularMedia(data),
-    }
+        avarageObservations: calcularMedia(data)
+    };
     return response;
 }
 
@@ -22,3 +19,11 @@ function calcularMedia(data) {
     let avarage = (reduced / value.length)
     return isNaN(avarage) ? 0 : avarage;
 }
+
+function filterReminders (reminders, type) {
+    let filtered = reminders.filter((item) => {
+      return item.type == type;
+    });
+
+    return filtered.length || 0;
+};
