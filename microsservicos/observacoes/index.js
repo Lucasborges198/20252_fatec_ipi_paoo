@@ -47,7 +47,8 @@ app.post('/lembretes/:id/observacoes', async (req, res) => {
     payload: observacao
   }),
   await axios.post('http://localhost:8080/observacao/estatistica', (observacao));
-  res.status(201).json(observacoesDoLembrete)
+  await axios.post('http://localhost:2333/register/log', ({...observacao, type: 'observação'}));
+  res.status(201).json(observacoesDoLembrete);
 })
 
 //GET /lembretes/:id/observacoes (req, res) => {}

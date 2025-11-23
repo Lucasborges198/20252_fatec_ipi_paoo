@@ -32,6 +32,7 @@ app.post('/lembretes', async function(req, res){
     type: 'LembreteCriado',
     payload: lembrete
   });
+  await axios.post('http://localhost:2333/register/log', ({...lembrete, type: 'lembrete'}));
   res.status(201).json(lembrete);
 })
 
