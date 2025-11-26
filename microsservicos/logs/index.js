@@ -14,8 +14,8 @@ app.post('/register/log', async (req, res) => {
 
     logs = [...logs, {data: event, logId: UUID, date: today}];
     axios.post('http://localhost:10000/eventos', {
-      type: `log - ${event.type}`,
-      payload: event
+      type: `logs`,
+      payload: event,
     });
     res.status(200).json('Log registrado');
 });
@@ -25,4 +25,15 @@ app.get('/logs', async (req, res) => {
 });
 
 const port = 2333
-app.listen(port, () => console.log(`Lembretes. Porta ${port}.`));
+app.listen(port, () => 
+  console.log(`Lembretes. Porta ${port}.`),
+  axios.get('http://localhost:10000/eventos', {params: {type: 'logs'}}).then(({resp}) => {
+    const eventos = Array.isArray(resp?.data) ? resp?.data : (resp?.data?.logs || []);
+    for(let evento of eventos){
+      try{
+        funcoes[evento.type](evento.payload)
+      }
+      catch(e){}
+    }
+  })
+);

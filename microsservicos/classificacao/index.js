@@ -21,7 +21,7 @@ const funcoes = {
 
 app.post('/eventos', (req, res) => {
   try{
-    const evento = req.body
+    const evento = {...req.body, reqType: 'classificacao'}
     console.log(evento)
     funcoes[evento.type](evento.payload)
   }
@@ -33,7 +33,8 @@ app.post('/eventos', (req, res) => {
 const port = 7000
 app.listen(port, () => {
   console.log(`Classificação. Porta ${port}.`)
-  axios.get('http://localhost:10000/eventos').then(({data: eventos}) => {
+  axios.get('http://localhost:10000/eventos', {params: {type: 'classificacao'}}).then(({resp}) => {
+    const eventos = Array.isArray(resp?.data) ? resp.data : (resp?.data?.classificacao || []);
     for(let evento of eventos){
       try{
         funcoes[evento.type](evento.payload)

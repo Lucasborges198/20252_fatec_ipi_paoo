@@ -28,7 +28,7 @@ const funcoes = {
     obsParaAtualizar.status = observacao.status
     //emitir um evento de tipo ObservacaoAtualizada e cujo payload seja a propria observacao
     axios.post('http://localhost:10000/eventos', {
-      type: 'ObservacaoAtualizada',
+      type: 'observacao',
       payload: observacao
     })
   }
@@ -43,7 +43,7 @@ app.post('/lembretes/:id/observacoes', async (req, res) => {
   observacoesDoLembrete.push(observacao)
   observacoesPorLembrete[lembreteId] = observacoesDoLembrete
   await axios.post('http://localhost:10000/eventos', {
-    type: 'ObservacaoCriada',
+    type: 'observacao',
     payload: observacao
   }),
   await axios.post('http://localhost:8080/observacao/estatistica', (observacao));
@@ -60,7 +60,7 @@ app.get('/lembretes/:id/observacoes', (req, res) => {
 
 app.post('/eventos', (req, res) => {
   try{
-    const evento = req.body
+    const evento = {...req.body, type: 'observacao'}
     console.log(evento)
     funcoes[evento.type](evento.payload)
   }
@@ -70,6 +70,17 @@ app.post('/eventos', (req, res) => {
 })
 
 const port = 5000
-app.listen(port, () => console.log(`Observações. Porta ${port}.`))
+app.listen(port, () => 
+  console.log(`Observações. Porta ${port}.`),
+  axios.get('http://localhost:10000/eventos', {params: {type: 'observacao'}}).then((resp) => {
+    const eventos = Array.isArray(resp?.data) ? resp?.data : (resp?.data?.observacao || []);
+    for(let evento of eventos){
+      try{
+        funcoes[evento.type](evento.payload)
+      }
+      catch(e){}
+    }
+  })
+)
 
 

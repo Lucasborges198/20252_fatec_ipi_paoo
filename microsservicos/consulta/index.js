@@ -22,7 +22,7 @@ const baseConsolidada = {}
 
 const funcoes = {
   //a função deve receber um lembrete e cadastrá-lo na base consolidada
-  LembreteCriado: (lembrete) => {
+  lembrete: (lembrete) => {
     baseConsolidada[lembrete.id] = lembrete
   },
   // id, texto, lembreteId
@@ -35,6 +35,21 @@ const funcoes = {
     const observacoes = baseConsolidada[observacao.lembreteId]['observacoes']
     const indice = observacoes.findIndex(o => o.id === observacao.id)
     observacoes[indice] = observacao
+  },
+  logs: (logs) => {
+    baseConsolidada[logs.id] = logs
+  },
+  consulta: (consulta) => {
+    baseConsolidada[consulta.id] = consulta
+  },
+  estatistica: (estatistica) => {
+    baseConsolidada[estatistica.id] = estatistica
+  },
+  classificacao: (classificacao) => {
+    baseConsolidada[classificacao.id] = classificacao
+  },
+  observacao: (observacao) => {
+    baseConsolidada[observacao.id] = observacao
   }
 }
 
@@ -46,30 +61,39 @@ app.get('/lembretes', (req, res) => {
 
 //recebe eventos, viabilizando a atualização da base
 app.post('/eventos', (req, res) => {
-  try{
-    //pegar o evento do corpo da requisição e fazer esse ponteiro apontar para ele
-    const evento = req.body
-    console.log(evento)
-    //desestruturar o evento, criando variaveis type e payload
-    // const type = evento.type
-    // const payload = evento.payload
-    const { type, payload } = evento
-    //acessar o mapa de funções na posição type e chamar a função resultante entregando a ela, como parametro, o payload
-    funcoes[type](payload)
+  try {
+    // 1. Separe o reqType do resto dos dados
+    // 'reqType' fica na variável isolada, 'gruposDeEventos' fica com os arrays
+    const { ...gruposDeEventos } = req.body; 
+
+    // 2. Itere APENAS sobre os grupos de eventos (ignorando reqType)
+    Object.values(gruposDeEventos).flat().forEach((item) => {
+        const { type, payload } = item;
+
+        // 3. Verificação de segurança
+            funcoes[type](payload);
+    });
+    
+  } catch (e) {
+    console.error('Erro ao processar eventos:', e); // Nunca deixe o catch vazio!
+    res.status(500).send('Erro interno'); // Avise quem chamou que deu erro
+    return;
   }
-  catch(e){}
-  res.end()
+  
+  res.end();
 })
 
 const port = 6000
 app.listen(port, async () => { 
   console.log (`Consulta. Porta ${port}.`)
-  const resp = await axios.get('http://localhost:10000/eventos')
-  //iterar sobre o corpo da resposta, pegando cada evento, e fazendo seu tratamento usando o mapa de funções
-  for (let evento of resp.data){
-      try{
-        funcoes[evento.type](evento.payload)
-      }
-      catch(e){}
-  }
+  await axios.get('http://localhost:10000/eventos', { params: {type: 'consulta'}}).then((resp) => {
+    const eventos = Array.isArray(resp?.data) ? resp?.data : (resp.data?.consulta || []);
+    //iterar sobre o corpo da resposta, pegando cada evento, e fazendo seu tratamento usando o mapa de funções
+    for (let evento of eventos){
+        try{
+          funcoes[evento.type](evento.payload)
+        }
+        catch(e){console.log(e)}
+    }
+  })
 })

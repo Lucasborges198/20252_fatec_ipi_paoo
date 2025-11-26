@@ -29,7 +29,7 @@ app.post('/lembretes', async function(req, res){
   lembretes[id] = lembrete
   await axios.post('http://localhost:8080/lembranca/estatistica', (lembrete));
   await axios.post('http://localhost:10000/eventos', {
-    type: 'LembreteCriado',
+    type: 'lembrete',
     payload: lembrete
   });
   await axios.post('http://localhost:2333/register/log', ({...lembrete, type: 'lembrete'}));
@@ -48,5 +48,15 @@ app.post('/eventos', (req, res) => {
   res.end()
 })
 
-const port = 4000
-app.listen(port, () => console.log(`Lembretes. Porta ${port}.`))
+const port = 1122
+app.listen(port, () => 
+  axios.get('http://localhost:10000/eventos', {params: {type: 'estatistica'}}).then((resp) => {
+    const eventos = Array.isArray(resp?.data) ? resp?.data : (resp?.data?.lembrete || []);
+    for(let evento of eventos){
+      try{
+        funcoes[evento.type](evento.payload)
+      }
+      catch(e){}
+    }
+  })
+)
