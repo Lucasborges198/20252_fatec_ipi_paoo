@@ -29,6 +29,10 @@ app.post('/eventos', (req, res) => {
   res.end()
 })
 
+app.get('/status', (req, res) => {
+  res.status(200).json();
+})
+
 //colocar o mss para funcionar na porta 7000
 const port = 7000
 app.listen(port, () => {

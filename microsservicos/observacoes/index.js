@@ -49,6 +49,10 @@ app.post('/lembretes/:id/observacoes', (req, res) => {
   res.status(201).json(observacoesDoLembrete)
 })
 
+app.get('/status', (req, res) => {
+  res.status(200).json();
+})
+
 //GET /lembretes/:id/observacoes (req, res) => {}
 app.get('/lembretes/:id/observacoes', (req, res) => {
   //devolver a lista de observações do lembrete cujo id faz parte do path

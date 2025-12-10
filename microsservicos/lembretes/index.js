@@ -38,6 +38,10 @@ app.get('/lembretes', (req, res) => {
   res.json(lembretes)
 })
 
+app.get('/status', (req, res) => {
+  res.status(200).json();
+})
+
 app.post('/eventos', (req, res) => {
   const evento = req.body
   console.log(evento)

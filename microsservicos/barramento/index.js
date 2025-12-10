@@ -38,6 +38,10 @@ app.get('/eventos', (req, res) => {
   res.json(eventos)
 })
 
+app.get('/status', (req, res) => {
+  res.status(200).json();
+})
+
 
 const port = 10000
 app.listen(port, () => {

@@ -61,6 +61,10 @@ app.post('/eventos', (req, res) => {
   res.end()
 })
 
+app.get('/status', (req, res) => {
+  res.status(200).json();
+})
+
 const port = 6000
 app.listen(port, async () => { 
   console.log (`Consulta. Porta ${port}.`)
